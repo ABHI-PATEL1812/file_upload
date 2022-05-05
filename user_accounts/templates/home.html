@@ -3,6 +3,14 @@
 
 {% block content %}
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 
 {% if error %}
 {{ error }}
@@ -10,24 +18,16 @@
 <br/>
 <br/>
 {% endif %}
-
-<h1>Homepage</h1>
-
-
-
-<form method = "POST" action="{% url 'login' %}">
+{% if user.is_authenticated %}
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    username:
-    <br/>
-    <input type="text" name="username" />
-    <br/>
-    Password:
-    <br/>
-    <input type="password" name="password" />
-    <br/>
-    <input class ="btn btn-primary" type="submit" value= "Login" />
-    <br/>
-</form>
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+  </form>
+  <p><a href="{% url 'logout' %}">LogOut</a></p>
+{% else %}
 
-
+  <p><a href="{% url 'login' %}">Login</a></p>
+  <p><a href="{% url 'register' %}">Register</a></p>
+{% endif %}
 {% endblock %}

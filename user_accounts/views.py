@@ -4,11 +4,27 @@ from django.shortcuts import render
 
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
-from django.contrib import auth
+from django.contrib import auth, messages
+from .forms import FileForm
 
 
 def home(request):
-    return render(request, 'home.html')
+    if request.method == 'POST':
+        form = FileForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.uploaded_by = request.user
+            form.save()
+            messages.success(request, 'File uploaded successfully!')
+            return redirect('home')
+        else:
+            messages.error(request, 'File not uploaded!')
+            return redirect('home')
+    else:
+        form = FileForm()
+    return render(request, 'home.html', {
+        'form': form
+    })
+
 
 def signup(request):
     if request.method == "POST":
