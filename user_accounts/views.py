@@ -6,13 +6,14 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from .forms import FileForm
+from .models import File
 
 
 def home(request):
     if request.method == 'POST':
         form = FileForm(request.POST, request.FILES)
         if form.is_valid():
-            form.uploaded_by = request.user
+            form.uploaded_by = request.user.id
             form.save()
             messages.success(request, 'File uploaded successfully!')
             return redirect('home')
@@ -21,8 +22,11 @@ def home(request):
             return redirect('home')
     else:
         form = FileForm()
+        files = File.objects.filter(uploaded_by=request.user)
+        print(files)
     return render(request, 'home.html', {
-        'form': form
+        'form': form,
+        'files': files
     })
 
 
